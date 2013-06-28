@@ -1,0 +1,64 @@
+<project name="test" basedir=".">
+	<target name="test">
+		<antcall target="testReferenceBasic"/>
+		<antcall target="testReferenceExtended"/>
+		<antcall target="testCandidate"/>
+	</target>
+
+	<target name="testReferenceBasic">
+		<echo message="run basic reference tests with candidate code"/>
+		<junit fork="yes" failureproperty="buildfailed">
+			<test name="com.onejli.SimpleTest"/>
+			<formatter type="brief" usefile="false"/>
+			<formatter type="xml" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter" usefile="true"/>
+			<classpath>
+				<fileset dir="../dist">
+					<include name="*-candidate.jar"/>
+					<include name="*-referenceTest.jar"/>
+				</fileset>
+				<pathelement location="../lib/junit-4.8.2.jar"/>
+			</classpath>
+		</junit>
+		<fail if="${buildfailed}" message="Failed testReferenceBasic"/>
+	</target>
+
+	<target name="testReferenceExtended">
+		<echo message="run extended reference tests with candidate code"/>
+		<junit fork="yes" failureproperty="buildfailed">
+			<test name="com.onejli.AdvancedTest"/>
+			<formatter type="brief" usefile="false"/>
+			<formatter type="xml" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter" usefile="true"/>
+			<classpath>
+				<fileset dir="../dist">
+					<include name="*-candidate.jar"/>
+					<include name="*-referenceTest.jar"/>
+				</fileset>
+				<pathelement location="../lib/junit-4.8.2.jar"/>
+			</classpath>
+		</junit>
+	</target>
+
+	<target name="testCandidate">
+		<echo message="run candidate's tests with candidate code"/>
+		<junit fork="yes" failureproperty="buildfailed">
+			<!--<test name=""/>-->
+			<formatter type="brief" usefile="false"/>
+			<formatter type="xml" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter" usefile="true"/>
+			<classpath>
+				<fileset dir="../dist">
+					<include name="*-candidate.jar"/>
+					<include name="*-candidateTest.jar"/>
+				</fileset>
+				<pathelement location="../lib/junit-4.8.2.jar"/>
+			</classpath>
+		</junit>
+	</target>
+
+	<target name="findbugs">
+		<echo message="run findbugs"/>
+	</target>
+
+	<target name="coverage">
+		<echo message="run coverage"/>
+	</target>
+</project>

@@ -1,0 +1,22 @@
+<project name="validate" basedir=".">
+	<target name="unzip" depends="init">
+		<!-- assume there is only 1 zip file in the upload dir.  this is enforced by the jenkins job -->
+		<unzip src="../upload/candidate.zip" dest="../candidate" failOnEmptyArchive="true"/>
+	</target>
+
+	<target name="prepForArtifactory">
+		<copy file="../upload/candidate.zip" tofile="../upload/${candidateName}-src.zip"/>
+	</target>
+
+	<target name="validate">
+		<echo message="This target should do something smart to validate the file/directory structure of the uploaded zip"/>
+		<!-- zip needs to look like this:
+			src/___.java
+			src/manifest.txt
+			test/___.java
+			test/___.testcase.txt
+		only validating manifest for now -->
+		<available file="../candidate/src/manifest.txt" property="isManifestAvail"/>
+		<fail unless="isManifestAvail" message="No manifest found!"/>
+	</target>
+</project>

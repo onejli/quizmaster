@@ -1,0 +1,64 @@
+project.buildDir='build-gradle'
+
+allprojects {
+	apply plugin:'maven'
+
+	group='com.onejli'
+	version='1.0-SNAPSHOT'
+	archivesBaseName=project.hasProperty('candidateName') ? "$candidateName-processed" : 'NONE'
+
+	repositories {
+		maven {
+			name 'artifactory'
+			url 'http://localhost:8081/artifactory/quizmaster/'
+		}
+	}
+
+	pom {
+		project {
+			inceptionYear '2008'
+			licenses {
+				license {
+					name 'The Apache Software License, Version 2.0'
+					url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					distribution 'repo'
+				}
+			}
+		}
+	}
+
+	configurations {
+		antClasspath
+	}
+
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+	}
+
+	dependencies {
+		antClasspath fileTree(dir: "$rootDir/lib", include: '**/*.jar')
+	}
+}
+
+ant.importBuild 'build/build.xml'
+
+ClassLoader antClassLoader = org.apache.tools.ant.Project.class.classLoader 
+configurations.antClasspath.each { File f -> 
+	antClassLoader.addURL(f.toURI().toURL()) 
+}
+
+subprojects {
+	apply plugin:'java'
+
+	//don't want the build task to run tests
+	task test(overwrite: true) {}
+
+	configurations {
+		testCompile.extendsFrom(antClasspath)
+	}
+
+	task dist(type: Copy){
+		into "$rootDir/dist"
+		from configurations.runtime
+	}
+}

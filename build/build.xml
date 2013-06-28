@@ -1,0 +1,5 @@
+<project name="quizmaster" basedir=".">
+	<import file="build-validate.xml"/>
+	<import file="build-compile.xml"/>
+	<import file="build-test.xml"/>
+</project>

@@ -1,0 +1,101 @@
+project.buildDir="$rootDir/build-gradle-build"
+
+dependencies {
+	runtime "${group}:${archivesBaseName}:${version}:reference"
+	runtime "${group}:${archivesBaseName}:${version}:referenceTest"
+	runtime "${group}:${archivesBaseName}:${version}:candidate"
+	runtime "${group}:${archivesBaseName}:${version}:candidateTest"
+}
+
+buildscript {
+	repositories {
+		maven {
+			name 'artifactory'
+			url 'http://localhost:8081/artifactory/quizmaster/'
+		}
+	}
+
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+	}
+
+	dependencies {
+		classpath "${group}:${candidateName}-raw:${version}"
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir "$rootDir/reference/src"
+		}
+	}
+
+	test {
+		java {
+			srcDir "$rootDir/reference/test"
+		}
+	}
+
+	candidate {
+		java {
+			srcDir "$rootDir/candidate/src"
+		}
+	}
+
+	candidateTest {
+		java {
+			srcDir "$rootDir/candidate/test"
+		}
+	}
+}
+
+task deploySource(type: Sync) {
+	buildscript.configurations.classpath.files.each { file ->
+		println "Extracting: $file to $rootDir/candidate"
+		from zipTree(file)
+	}
+
+	into "$rootDir/candidate/src"
+}
+
+compileCandidateJava.dependsOn(deploySource)
+compileCandidateTestJava.dependsOn(deploySource)
+
+//this override of the default jar task config is equivalent to the next block
+jar {
+	classifier='reference'
+}
+/*
+// produce a jar file for the reference classes
+task referenceJar(type: Jar, dependsOn: classes) {
+	classifier = 'reference'
+	from sourceSets.main.output
+}
+*/
+
+// produce a jar file for the reference test classes
+task referenceTestJar(type: Jar, dependsOn: test) {
+	classifier = 'referenceTest'
+	from sourceSets.test.output
+}
+
+// produce a jar file for the candidate's classes
+task candidateJar(type: Jar, dependsOn: classes) {
+	classifier = 'candidate'
+	from sourceSets.candidate.output
+}
+
+// produce a jar file for the candidate's test classes
+task candidateTestJar(type: Jar, dependsOn: test) {
+	classifier = 'candidateTest'
+	from sourceSets.candidateTest.output
+}
+
+// add all of the artifacts above to our archives list
+artifacts {
+	//archives referenceJar //don't need this because we overrode the default jar task config
+	archives referenceTestJar
+	archives candidateJar
+	archives candidateTestJar
+}

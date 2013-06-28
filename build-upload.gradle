@@ -1,0 +1,36 @@
+project.buildDir="$rootDir/build-gradle-upload"
+group="com.onejli"
+
+apply plugin: 'java'
+apply plugin:'maven'
+
+version='1.0-SNAPSHOT'
+archivesBaseName=project.hasProperty('candidateName') ? "$candidateName-raw" : 'NONE'
+
+repositories {
+	maven {
+		name 'artifactory'
+		url 'http://localhost:8081/artifactory/quizmaster/'
+	}
+}
+
+pom {
+	project {
+		inceptionYear '2008'
+		licenses {
+			license {
+				name 'The Apache Software License, Version 2.0'
+				url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				distribution 'repo'
+			}
+		}
+	}
+}
+
+sourceSets {
+	main {
+		resources {
+			srcDir 'candidate/src'
+		}
+	}
+}

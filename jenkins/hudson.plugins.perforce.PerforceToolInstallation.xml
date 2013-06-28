@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.perforce.PerforceToolInstallation_-DescriptorImpl>
+  <helpRedirect/>
+  <installations>
+    <hudson.plugins.perforce.PerforceToolInstallation>
+      <name>p4</name>
+      <home>/home/jenkins/p4</home>
+      <properties/>
+    </hudson.plugins.perforce.PerforceToolInstallation>
+  </installations>
+</hudson.plugins.perforce.PerforceToolInstallation_-DescriptorImpl>

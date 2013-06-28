@@ -1,0 +1,3 @@
+Main-Class: com.onejli.SimpleTest
+Class-Path: candidate.jar
+

@@ -1,0 +1,73 @@
+<project name="compile" basedir=".">
+	<!-- clean target for ant to avoid collision with gradle -->
+	<target name="clean2">
+		<antcall target="cleanCandidateDir"/>
+		<delete verbose="true" quiet="true" includeemptydirs="true">
+			<fileset dir="../classes"/>
+			<fileset dir="../dist"/>
+		</delete>
+	</target>
+
+	<target name="cleanCandidateDir">
+		<delete verbose="true" quiet="true" includeemptydirs="true">
+			<fileset dir="../candidate">
+				<exclude name="build.gradle"/>
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="init">
+		<mkdir dir="../classes/candidate"/>
+		<mkdir dir="../classes/candidate-test"/>
+		<mkdir dir="../classes/reference"/>
+		<mkdir dir="../classes/reference-test"/>
+		<mkdir dir="../dist"/>
+	</target>
+
+	<target name="compile" depends="init">
+		<antcall target="compileCandidate"/>
+		<antcall target="compileReference"/>
+		<antcall target="compileTest"/>
+	</target>
+
+	<target name="compileCandidate">
+		<echo message="compile candidate's code"/>
+		<javac srcdir="../candidate/src" includeantruntime="false" destdir="../classes/candidate" debug="true" deprecation="true"/>
+	</target>
+
+	<target name="compileReference">
+		<echo message="compile candidate's code"/>
+		<javac srcdir="../reference/src" includeantruntime="false" destdir="../classes/reference" debug="true" deprecation="true"/>
+	</target>
+
+	<target name="compileTest">
+		<antcall target="compileTestCandidate"/>
+		<antcall target="compileTestReference"/>
+	</target>
+
+	<target name="compileTestCandidate">
+		<echo message="compile candidate's test code"/>
+	</target>
+
+	<target name="compileTestReference">
+		<echo message="compile reference test code"/>
+		<javac srcdir="../reference/test" classpath="../classes/reference;../lib/junit-4.8.2.jar" includeantruntime="false" destdir="../classes/reference-test" debug="true" deprecation="true"/>
+	</target>
+
+	<target name="jar">
+		<jar destfile="../dist/${candidateName}.jar" manifest="../candidate/src/manifest.txt">
+			<fileset dir="../classes/candidate"/>
+		</jar>
+		<!-- Currently not including any candidate test code...skip this for now
+		<jar destfile="../dist/${candidateName}-test.jar" manifest="../candidate/test/manifest.txt">
+			<fileset dir="../classes/candidate-test"/>
+		</jar>
+		-->
+		<jar destfile="../dist/reference.jar" manifest="../reference/src/manifest.txt">
+			<fileset dir="../classes/reference"/>
+		</jar>
+		<jar destfile="../dist/test-reference.jar" manifest="../reference/test/manifest.txt">
+			<fileset dir="../classes/reference-test"/>
+		</jar>
+	</target>
+</project>
